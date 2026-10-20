@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traditional Media II — Audio + Television | APRD 3002</title>
+<style>
+  :root{
+    --ink:#141414; --paper:#ffffff; --blue:#1246a0; --amber:#f5b301;
+    --grey:#5a5a5a; --line:#d9d9d9; --soft:#f2f2f0; --red:#b3271e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--paper); overflow:hidden;
+  }
+  .deck{position:relative;height:100vh;width:100vw}
+  .slide{
+    position:absolute; inset:0; display:none; flex-direction:column;
+    padding:4.5vh 6vw 7vh 6vw; overflow-y:auto;
+  }
+  .slide.active{display:flex}
+  .kicker{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--blue); margin-bottom:14px;
+  }
+  h1{font-family:Georgia,"Times New Roman",serif; font-weight:700; font-size:clamp(34px,4.6vw,58px); line-height:1.05; letter-spacing:-.01em}
+  h2{font-family:Georgia,"Times New Roman",serif; font-weight:700; font-size:clamp(28px,3.6vw,44px); line-height:1.1; margin-bottom:18px}
+  h3{font-size:19px; font-weight:700; margin-bottom:8px}
+  p,li{font-size:clamp(16px,1.55vw,21px); line-height:1.45}
+  p{margin-bottom:14px}
+  ul{margin:0 0 14px 22px}
+  li{margin-bottom:8px}
+  .lead{font-size:clamp(19px,2vw,26px); line-height:1.4; max-width:52ch}
+  .small{font-size:14px; color:var(--grey); line-height:1.5}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .rule{border:none;border-top:3px solid var(--ink); margin:18px 0 22px 0; width:100%}
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:4vw; align-items:start}
+  .cols3{display:grid; grid-template-columns:repeat(3,1fr); gap:2.5vw; align-items:start}
+  @media(max-width:900px){.cols,.cols3{grid-template-columns:1fr}}
+  .statgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:18px; margin:20px 0}
+  .stat{border-top:3px solid var(--ink); padding-top:10px}
+  .stat .n{font-family:Georgia,serif; font-size:clamp(30px,3.4vw,46px); font-weight:700; line-height:1}
+  .stat .l{font-size:13.5px; color:var(--grey); margin-top:6px; line-height:1.4}
+  .stat.blue{border-top-color:var(--blue)} .stat.blue .n{color:var(--blue)}
+  .stat.amber{border-top-color:var(--amber)}
+  table{width:100%; border-collapse:collapse; font-size:15.5px; margin:12px 0}
+  th{font-family:ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+     text-align:right; padding:8px 10px; border-bottom:2.5px solid var(--ink); color:var(--ink)}
+  th:first-child{text-align:left}
+  td{padding:8px 10px; border-bottom:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums}
+  td:first-child{text-align:left; font-weight:600}
+  tr.hl td{background:#eef3fb; font-weight:700}
+  .box{background:var(--soft); padding:18px 20px; margin:14px 0}
+  .box.warn{background:#fdf3e7; border-left:5px solid var(--amber)}
+  .box.stop{background:#fbeeec; border-left:5px solid var(--red)}
+  .box .t{font-weight:700; margin-bottom:6px}
+  .box p:last-child{margin-bottom:0}
+  .wall{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; margin:16px 0}
+  .wall figure{border:1px solid var(--line); background:#fff}
+  .wall img{width:100%; height:150px; object-fit:cover; display:block}
+  .wall figcaption{font-size:12px; color:var(--grey); padding:7px 9px; font-family:ui-monospace,Menlo,monospace}
+  .card{border:1.5px solid var(--ink); padding:16px 18px; margin-bottom:14px; background:#fff}
+  .card .hd{display:flex; justify-content:space-between; gap:12px; font-family:ui-monospace,Menlo,monospace; font-size:12.5px; color:var(--grey); margin-bottom:8px}
+  .card .ttl{font-weight:700; font-size:17px; margin-bottom:5px}
+  .card .bdy{font-size:15.5px; line-height:1.45}
+  .card .lnk{font-size:13px; color:var(--blue); margin-top:7px; font-family:ui-monospace,Menlo,monospace}
+  svg.chart{width:100%; height:auto; display:block; margin:10px 0}
+  .chartnote{font-size:13.5px; color:var(--grey); margin-top:4px}
+  .hud{
+    position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:space-between; align-items:center;
+    padding:10px 20px; font-family:ui-monospace,Menlo,monospace; font-size:12.5px; color:var(--grey);
+    background:linear-gradient(to top, rgba(255,255,255,.96), rgba(255,255,255,0)); z-index:50; pointer-events:none;
+  }
+  .hud button{pointer-events:auto; font:inherit; background:#fff; border:1.5px solid var(--ink); color:var(--ink);
+    padding:5px 12px; cursor:pointer; margin-left:8px}
+  .hud button:hover{background:var(--ink); color:#fff}
+  #bar{position:fixed; top:0; left:0; height:4px; background:var(--amber); z-index:60; width:0%}
+  .notes{display:none; margin-top:22px; border-top:2px dashed var(--blue); padding-top:14px}
+  body.shownotes .notes{display:block}
+  .notes .t{font-family:ui-monospace,Menlo,monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--blue); margin-bottom:8px}
+  .notes p,.notes li{font-size:15px}
+  .bigq{font-family:Georgia,serif; font-size:clamp(24px,3vw,38px); line-height:1.25; font-style:italic; max-width:26ch}
+  .tag{display:inline-block; font-family:ui-monospace,Menlo,monospace; font-size:11.5px; letter-spacing:.08em;
+       border:1.5px solid var(--ink); padding:3px 8px; margin-right:6px; text-transform:uppercase}
+  .tag.b{border-color:var(--blue); color:var(--blue)} .tag.r{border-color:var(--red); color:var(--red)}
+  .flow{display:flex; flex-wrap:wrap; gap:10px; align-items:stretch; margin:16px 0}
+  .flow .step{flex:1 1 150px; border:1.5px solid var(--ink); padding:12px 14px}
+  .flow .step .s{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; color:var(--blue); letter-spacing:.1em; text-transform:uppercase}
+  .flow .step .v{font-weight:700; font-size:16.5px; margin-top:4px}
+  .flow .arr{align-self:center; font-size:22px; font-weight:700}
+  @media print{
+    body{overflow:visible} .deck{height:auto}
+    .slide{display:flex !important; position:static; page-break-after:always; overflow:visible; min-height:95vh}
+    .hud,#bar{display:none} .notes{display:block}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="deck" id="deck">
+
+<!-- 1 TITLE -->
+<section class="slide">
+  <div class="kicker">APRD 3002 · Traditional Media II · Tue Nov 10, 2026</div>
+  <h1>Audio + Television:<br>ratings, dayparts,<br>and political money</h1>
+  <hr class="rule">
+  <p class="lead">AM/FM radio still commands <strong>64% of all ad-supported audio time</strong> (Edison Share of Ear, Q3 2025) and <strong>83% in the car</strong>. Local broadcast TV still takes <strong>just under half of all political ad dollars</strong> — about $5.6B forecast for the 2026 cycle you just lived through.</p>
+  <p>Today: how audio and TV are actually measured (diaries, meters, panels), how spot markets price, why local TV survives the streaming era, and where the entry-level jobs sit. Thursday is GA4; your Subaru report is due that night.</p>
+  <p class="small">Sources: Edison Research Share of Ear (2025), Nielsen The Gauge / Ad Supported Gauge (2026), AdImpact political forecasts via industry analyses, BIA local advertising forecast ($186.1B local market, 2026).</p>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Last Tuesday (OOH) impressions were modeled from movement. Today measurement is panel/diary-based — older rituals, same epistemology: samples, weighting, denominators. Keep tying back to Reporting rules.</p>
+  </div>
+</section>
+
+<!-- 2 SHARE OF EAR -->
+<section class="slide">
+  <div class="kicker">Audio · the map</div>
+  <h2>Advertisers misjudge audio by about 2.4×</h2>
+  <div class="statgrid">
+    <div class="stat blue"><div class="n">64%</div><div class="l">AM/FM share of ad-supported audio time, adults 18+ (Edison Q3 2025)</div></div>
+    <div class="stat"><div class="n">20%</div><div class="l">Podcasts — now a major reach medium, still one-third of radio's weight</div></div>
+    <div class="stat"><div class="n">13%</div><div class="l">Spotify + Pandora + YouTube + Amazon Music <em>combined</em> (ad-supported tiers)</div></div>
+    <div class="stat amber"><div class="n">83%</div><div class="l">AM/FM share of in-car ad-supported listening (Q4 2025) — the dashboard is radio's fortress</div></div>
+  </div>
+  <p>Cumulus/Westwood One's read of the same Edison data: marketers <em>perceive</em> AM/FM's share at less than half its measured size. That perception gap is a planning opportunity: underpriced attention sits where buyers aren't looking. Caveat like grown-ups: Share of Ear is a diary-based share of <em>time</em>, not persons reached — heavy listeners weigh more. Denominators, always.</p>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Registered voters mirror the total (64%, Q1–Q4 2025) — sets up the political segment later. Podcasts skew older each year (Edison trend reporting) — demolish the "podcasts = only 25-year-olds" assumption if it surfaces.</p>
+  </div>
+</section>
+
+<!-- 3 RADIO MEASUREMENT -->
+<section class="slide">
+  <div class="kicker">Audio · measurement</div>
+  <h2>Diaries, meters, and the tyranny of the quarter-hour</h2>
+  <div class="cols">
+    <div>
+      <h3>How Nielsen Audio counts</h3>
+      <ul>
+        <li><strong>PPM (Portable People Meter)</strong> markets: panelists carry meters that detect encoded station audio — passive, granular, expensive; top markets only.</li>
+        <li><strong>Diary markets:</strong> respondents write listening in quarter-hours from memory — cheaper, recall-biased toward favorite stations and round times.</li>
+        <li>Currency metrics: <strong>AQH</strong> (average quarter-hour persons), <strong>Cume</strong> (weekly reach), rating = AQH ÷ population. Dayparts (morning drive 6–10a etc.) are the buying units.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What to interrogate</h3>
+      <ul>
+        <li>Sample size per demo cell: a "spike" in women 25–34 can be eleven diaries.</li>
+        <li>Metro vs. total survey area: which geography is the rating actually describing?</li>
+        <li>Streaming simulcast included or not? Total-line reporting changes the station's number without changing a single listener.</li>
+      </ul>
+      <div class="box warn"><div class="t">Same lesson, third medium</div><p>Geopath modeled movement; Nielsen samples people. Both publish confident decimals. Your job is to know which ritual produced the number before you price it.</p></div>
+    </div>
+  </div>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Denver-Boulder is a PPM market — local texture available. Host-read/endorsement spots and sports play-by-play are radio's trust formats; flag for creative section.</p>
+  </div>
+</section>
+
+<!-- 4 AUDIO BUYING -->
+<section class="slide">
+  <div class="kicker">Audio · the buy</div>
+  <h2>Spot radio: cheap reach, brutal frequency, local voices</h2>
+  <ul>
+    <li><strong>Units:</strong> :60/:30/:15 spots in daypart rotators or fixed positions; drive times price at a premium because the car is captive (83% share, remember).</li>
+    <li><strong>Economics:</strong> local spot CPMs routinely sit far below digital video — radio buys <em>frequency against a geography</em> (dealers, QSR, services, political) better than almost anything.</li>
+    <li><strong>Formats are audiences:</strong> news/talk, sports, country, CHR, Spanish-language — format selection <em>is</em> targeting, with host trust as the contextual layer (your Peer39 lesson, human edition).</li>
+    <li><strong>Digital extension:</strong> station streams, podcasts, and network audio (Westwood One, iHeart) sell alongside broadcast — one buy, measured in two currencies. Reconcile before reporting, like Subaru tabs.</li>
+  </ul>
+  <div class="box"><div class="t">In class (8 minutes)</div><p>Pick a Denver advertiser from your capstone list. Choose two formats/dayparts, state the reach-vs-frequency job, and name the waste you're accepting. Defend in one minute.</p></div>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Owners to name: iHeartMedia, Audacy, Cumulus, Townsquare + local groups. Political note: radio took ~$300M of 2026 political (AdImpact) — small share, high voter efficiency story sellers tell with that 64% voter share.</p>
+  </div>
+</section>
+
+<!-- 5 TV LANDSCAPE -->
+<section class="slide">
+  <div class="kicker">Television · the landscape</div>
+  <h2>Streaming won the clock. Broadcast kept the moments.</h2>
+  <div class="statgrid">
+    <div class="stat"><div class="n">49.0%</div><div class="l">Streaming share of total TV viewing (Nielsen Gauge, July 2026)</div></div>
+    <div class="stat blue"><div class="n">19.5%</div><div class="l">Broadcast share of total viewing — but 26.6% of <em>ad-supported</em> viewing (Q2 2026)</div></div>
+    <div class="stat"><div class="n">18.7%</div><div class="l">Cable share — record low (July 2026)</div></div>
+    <div class="stat amber"><div class="n">$186.1B</div><div class="l">Total US <em>local</em> advertising market, 2026 forecast (BIA) — local is not a footnote</div></div>
+  </div>
+  <p>Read the two broadcast numbers together and you've learned the whole slide: as a share of <em>everything watched</em>, broadcast shrinks; as a share of <em>watching that carries ads</em>, live sports and local news keep it disproportionately buyable. You covered CTV buying in Week 9 — today is the linear/local half that CTV plans still lean on for reach completion.</p>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Gauge methods matter: streaming from meter subset, linear from full panel, persons 2+. Ad Supported Gauge is the planner's cut. Live sports drove broadcast share resilience in Q2 2026 reporting.</p>
+  </div>
+</section>
+
+<!-- 6 LOCAL TV -->
+<section class="slide">
+  <div class="kicker">Television · local</div>
+  <h2>Local TV: news, sports, weather — and every election</h2>
+  <ul>
+    <li><strong>The product:</strong> local news dayparts (morning, early fringe, late news), syndication, network prime/sports adjacencies, sold by DMA through station groups — Nexstar, Gray, Sinclair, TEGNA, Scripps — and rep firms.</li>
+    <li><strong>The political engine:</strong> AdImpact's 2026 forecast puts <strong>~$5.6B (just under 50% of political spend) into broadcast</strong>, ahead of CTV ($2.7B), digital ($1.6B), cable ($1.4B), radio ($300M). In battleground DMAs, Q4 inventory effectively re-prices for everyone — including your car dealer.</li>
+    <li><strong>Why it persists:</strong> geographic precision without identity data, older-skewing high-propensity audiences (voters, homeowners), live/local trust, and co-op dealer money that must be spent locally.</li>
+  </ul>
+  <div class="box warn"><div class="t">Planning consequence</div><p>In even-numbered falls, non-political local advertisers get preempted and priced out of news adjacencies. A capstone plan with local TV in Oct–Nov of an election year needs a preemption makegood clause and a CTV/radio pressure valve — write it before the station does.</p></div>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Kagan estimate for local OTA political was ~$3.8–4.2B (narrower definition than AdImpact's broadcast total) — use the gap itself to teach forecast definitions. Colorado 2026 races made Denver inventory tight this fall; students saw the density firsthand.</p>
+  </div>
+</section>
+
+<!-- 7 TV MEASUREMENT + MATH -->
+<section class="slide">
+  <div class="kicker">Television · measurement &amp; math</div>
+  <h2>Ratings, GRPs, and the reach curve linear still owns</h2>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>Term</th><th>Meaning</th></tr>
+        <tr><td>Rating</td><td style="text-align:left">% of universe (households or demo) viewing</td></tr>
+        <tr><td>Share</td><td style="text-align:left">% of sets/persons <em>in use</em> at that time</td></tr>
+        <tr><td>GRP/TRP</td><td style="text-align:left">Sum of ratings; = Reach% × Frequency</td></tr>
+        <tr><td>CPP</td><td style="text-align:left">Cost per rating point — local TV's CPM cousin</td></tr>
+        <tr><td>Daypart</td><td style="text-align:left">Early morning, daytime, early fringe/news, prime, late news, late fringe</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Worked skeleton (illustrative)</h3>
+      <p>Denver DMA adults 25–54 ≈ 1.4M. A 300-TRP local news flight at $450 CPP costs <strong>$135K</strong> for ≈4.2M target impressions (CPM ≈ $32). Expensive per thousand vs. Subaru display ($3.14) — and it reaches cord-cut households your DSP never sees, in trusted live context, by Friday. Price is meaningless without the reach-completion job.</p>
+      <div class="box"><div class="t">Measurement honesty</div><p>Nielsen panels + big-data return-path blends are estimates with sample error, exactly like diaries. Local demos get thin fast. Report ranges and universes, not false decimals.</p></div>
+    </div>
+  </div>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Connect CPP↔CPM conversions for capstone budgeting (Studio II next week prices every channel in one table — students must normalize currencies).</p>
+  </div>
+</section>
+
+<!-- 8 CONVERGENCE -->
+<section class="slide">
+  <div class="kicker">Convergence, honestly</div>
+  <h2>"Traditional" is now a buying style, not a technology</h2>
+  <ul>
+    <li><strong>Radio groups sell audio portfolios:</strong> broadcast + streams + podcasts + smart-speaker inventory in one proposal, often with digital attribution add-ons. The station rep is now an audio consultant with a dashboard.</li>
+    <li><strong>Local TV sells impressions beyond the spot:</strong> station OTT/CTV apps, addressable overlays, and extended-reach digital bundled with linear schedules. Your Week 9 CTV skills apply — with DMA geography instead of device graphs.</li>
+    <li><strong>Programmatic pipes reach both:</strong> audio exchanges and TV platforms (e.g., station-group programmatic marketplaces) trade on ratings-informed impressions. Peter's partnerships world again — guaranteed local deals inside national pipes.</li>
+  </ul>
+  <div class="box"><div class="t">The planner's synthesis</div><p>Buy the <em>job</em> (drive-time frequency, live-news trust, election-proof reach), then choose the pipe (direct spot, network, programmatic). Medium-first planning is how budgets inherit last year's shape.</p></div>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Warn on double counting when broadcast + stream audiences are summed in proposals — the Subaru tabs lesson in a new costume. Ask for deduplicated reach or label it gross.</p>
+  </div>
+</section>
+
+<!-- 9 JOBS -->
+<section class="slide">
+  <div class="kicker">Careers</div>
+  <h2>Local media is a first-job engine</h2>
+  <table>
+    <tr><th>Seat</th><th>Who hires</th><th>First-year reality</th></tr>
+    <tr><td>Station sales (AE track)</td><td style="text-align:left">Nexstar/Gray/Sinclair/TEGNA/Scripps stations; iHeart/Audacy/Cumulus clusters</td><td style="text-align:left">Local direct accounts (dealers, services, healthcare), ratings stories, makegoods — Denver stations hire every year</td></tr>
+    <tr><td>Agency spot buyer/planner</td><td style="text-align:left">Local/regional agencies + holding-company local teams</td><td style="text-align:left">DMA plans, CPP negotiations, post-buy delivery (did the GRPs air?)</td></tr>
+    <tr><td>Network/rep sales</td><td style="text-align:left">National rep firms, Westwood One, Katz-style firms</td><td style="text-align:left">Selling many markets as one buy; political-cycle intensity</td></tr>
+    <tr><td>Audio/TV ad ops + insights</td><td style="text-align:left">Groups' digital teams, Nielsen ecosystem</td><td style="text-align:left">Streaming/OTT trafficking, ratings analysis, attribution support</td></tr>
+  </table>
+  <p>The interview flex from this course: you can convert CPP↔CPM, explain diary-vs-meter error, and say what preemption does to a Q4 plan. That vocabulary is the job.</p>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Political cycle note: even-year falls are local TV's harvest; off-years test automotive/retail/healthcare categories. Students graduating into a midterm-aftermath market should expect political comps to make YoY look ugly — teach them to normalize.</p>
+  </div>
+</section>
+
+<!-- 10 CAPSTONE TRANSFER -->
+<section class="slide">
+  <div class="kicker">Into your media plan</div>
+  <h2>If audio or TV is in your capstone, declare these</h2>
+  <div class="flow">
+    <div class="step"><div class="s">Universe</div><div class="v">DMA/demo population your ratings divide by</div></div><div class="arr">→</div>
+    <div class="step"><div class="s">Weight</div><div class="v">GRPs/TRPs or AQH-based delivery, reach × frequency shown separately</div></div><div class="arr">→</div>
+    <div class="step"><div class="s">Price</div><div class="v">CPP/CPM with source + election-cycle adjustment if fall-weighted</div></div><div class="arr">→</div>
+    <div class="step"><div class="s">Proof</div><div class="v">Post-buy delivery check + one downstream signal (search, calls, store traffic) with a window</div></div>
+  </div>
+  <p>Thursday: GA4 — the advertiser's ledger that checks every claim made this week. Your Subaru report is due Thursday night (11/12). Next Tuesday the studio workshops begin: bring your allocation evidence, leave with a priced section.</p>
+  <div class="notes"><div class="t">Speaker notes</div>
+    <p>Close with the audio defense volunteers from slide 4 if not yet heard. Remind: Studio 2 was due yesterday; late window rules from syllabus apply without asking.</p>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="hud">
+  <span>Traditional II: Audio + TV · APRD 3002 · <span id="counter">1 / 10</span></span>
+  <span>
+    <button id="prevBtn" type="button">← Prev</button>
+    <button id="nextBtn" type="button">Next →</button>
+    <button id="notesBtn" type="button">Notes (N)</button>
+    <button id="fsBtn" type="button">Fullscreen (F)</button>
+  </span>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll(".slide")]; let cur=0;
+function show(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,j)=>s.classList.toggle("active", j===cur));
+  document.getElementById("counter").textContent=(cur+1)+" / "+slides.length;
+  document.getElementById("bar").style.width=((cur+1)/slides.length*100)+"%";
+  slides[cur].scrollTop=0;
+  history.replaceState(null,"","#"+(cur+1));
+}
+document.getElementById("prevBtn").onclick=()=>show(cur-1);
+document.getElementById("nextBtn").onclick=()=>show(cur+1);
+document.getElementById("notesBtn").onclick=()=>document.body.classList.toggle("shownotes");
+document.getElementById("fsBtn").onclick=()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
+};
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown"){e.preventDefault();show(cur+1);}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}
+  else if(e.key==="n"||e.key==="N") document.body.classList.toggle("shownotes");
+  else if(e.key==="f"||e.key==="F") document.getElementById("fsBtn").click();
+  else if(e.key==="Home") show(0); else if(e.key==="End") show(slides.length-1);
+});
+let tx=null;
+document.addEventListener("touchstart",e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener("touchend",e=>{
+  if(tx===null) return; const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>60) show(cur+(dx<0?1:-1)); tx=null;
+},{passive:true});
+show(Math.min(slides.length-1, Math.max(0, (parseInt(location.hash.slice(1))||1)-1)));
+</script>
+</body>
+</html>
+
+
